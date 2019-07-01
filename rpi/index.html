@@ -1,11 +1,72 @@
 <html>
 <body>
+  <h1>UAS Praktikum Embedded System</h1>
+ <h1>Firda Imam Asa</h1>
+ <h1>L200164001</h1>
 <center>
-<h2>
-Nama Foto = L200164001_1.jpg   dan  L200164001_2.jpg <br></h2>
-<h2>  
-Nama Video = L200164001_3.mp4</h2>
-<br>
+Code : <br>
+#Libraries
+import RPi.GPIO as GPIO
+import time
+ 
+#GPIO Mode (BOARD / BCM)
+GPIO.setmode(GPIO.BCM)
+ 
+#set GPIO Pins
+GPIO_TRIGGER = 18
+GPIO_ECHO = 24
+RELAIS_1_GPIO = 2
+ 
+#set GPIO direction (IN / OUT)
+GPIO.setup(GPIO_TRIGGER, GPIO.OUT)
+GPIO.setup(GPIO_ECHO, GPIO.IN)
+ 
+def distance():
+    # set Trigger to HIGH
+    GPIO.output(GPIO_TRIGGER, True)
+ 
+    # set Trigger after 0.01ms to LOW
+    time.sleep(0.00001)
+    GPIO.output(GPIO_TRIGGER, False)
+ 
+    StartTime = time.time()
+    StopTime = time.time()
+ 
+    # save StartTime
+    while GPIO.input(GPIO_ECHO) == 0:
+        StartTime = time.time()
+ 
+    # save time of arrival
+    while GPIO.input(GPIO_ECHO) == 1:
+        StopTime = time.time()
+ 
+    # time difference between start and arrival
+    TimeElapsed = StopTime - StartTime
+    # multiply with the sonic speed (34300 cm/s)
+    # and divide by 2, because there and back
+    distance = (TimeElapsed * 34300) / 2
+ 
+    return distance
+ 
+if __name__ == '__main__':
+    try:
+        while True:
+            dist = distance()
+            if dist<15:
+                GPIO.output(RELAIS_1_GPIO,GPIO.HIGH)
+            else:
+                GPIO.output(RELAIS_1_GPIO,GPIO.LOW)
+            print ("Measured Distance = %.1f cm" % dist)
+            time.sleep(1)
+            print ("Measured Distance = %.1f cm" % dist)
+            time.sleep(1)
+ 
+        # Reset by pressing CTRL + C
+    except KeyboardInterrupt:
+        print("Measurement stopped by User")
+        GPIO.cleanup()
+
+Nama Foto = L200164001_1.jpg   dan  L200164001_2.jpg <br>
 <br>
 <img src="L200164001_1.jpg" alt="Italian Trulli" style="width:950px;height:600px;"> <br>
 <img src="L200164001_2.jpg" alt="Italian Trulli" style="width:950px;height:600px;">
